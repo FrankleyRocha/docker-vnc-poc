@@ -1,0 +1,44 @@
+version: '3'
+services:
+  rdesktop:
+    image: lscr.io/linuxserver/rdesktop:ubuntu-xfce
+    container_name: rdesktop
+    #security_opt:
+    #  - seccomp:unconfined #optional
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    #volumes:
+    #  - /var/run/docker.sock:/var/run/docker.sock #optional
+    #  - /path/to/rdesktop/data:/config #optional
+    ports:
+      - 3389:3389
+    #devices:
+    #  - /dev/dri:/dev/dri #optional
+    shm_size: "1gb" #optional
+    restart: unless-stopped  
+  
+  remmina:
+    image: lscr.io/linuxserver/remmina:latest
+    container_name: remmina
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    #volumes:
+    #  - /path/to/config:/config
+    ports:
+      - 3000:3000
+    #  - 3001:3001
+    restart: unless-stopped
+
+  ngix:
+    image: nginx
+    volumes:      
+      #- ./web:/usr/share/nginx/html:ro
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - 8080:80    
+    depends_on:
+      - remmina
